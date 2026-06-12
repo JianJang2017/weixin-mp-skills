@@ -24,6 +24,16 @@ DEVELOPER_PLATFORM_URL = "https://developers.weixin.qq.com/platform"
 INLINE_IMAGE_LIMIT = 1024 * 1024
 DEFAULT_CREDENTIALS_FILE = Path.home() / ".config" / "wechat-mp" / ".env"
 IMG_SRC_RE = re.compile(r"(<img\b[^>]*?\bsrc\s*=\s*)([\"'])(.*?)(\2)", re.I | re.S)
+PRE_BLOCK_RE = re.compile(r"<pre\b(?P<attrs>[^>]*)>(?P<body>.*?)</pre>", re.I | re.S)
+STYLE_ATTR_RE = re.compile(r"\bstyle\s*=\s*([\"'])(?P<style>.*?)\1", re.I | re.S)
+CODE_WRAPPER_RE = re.compile(r"^\s*<code\b[^>]*>(?P<body>.*?)</code>\s*$", re.I | re.S)
+DEFAULT_CODE_STYLE = (
+    "display:block;box-sizing:border-box;max-width:100%;"
+    "margin:16px 0 22px;padding:16px;background:#0f172a;color:#dbeafe;"
+    "border-radius:8px;word-break:break-all;overflow-wrap:anywhere;"
+    "font-size:14px;line-height:1.75;"
+    "font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;"
+)
 
 
 class WeChatError(RuntimeError):
@@ -123,7 +133,7 @@ def simple_markdown_to_html(text: str) -> str:
         stripped = line.strip()
         if stripped.startswith("```"):
             if in_code:
-                blocks.append(f"<pre><code>{html.escape(chr(10).join(code_lines))}</code></pre>")
+                blocks.append(wechat_code_block_from_text(chr(10).join(code_lines)))
                 code_lines = []
                 in_code = False
             else:
@@ -151,9 +161,71 @@ def simple_markdown_to_html(text: str) -> str:
         paragraph.append(stripped)
 
     if in_code:
-        blocks.append(f"<pre><code>{html.escape(chr(10).join(code_lines))}</code></pre>")
+        blocks.append(wechat_code_block_from_text(chr(10).join(code_lines)))
     flush_paragraph()
     return "\n".join(blocks)
+
+
+def wechat_code_style(pre_attrs: str) -> str:
+    match = STYLE_ATTR_RE.search(pre_attrs)
+    raw_style = match.group("style") if match else DEFAULT_CODE_STYLE
+    declarations: list[str] = []
+    seen: set[str] = set()
+    for raw_declaration in raw_style.split(";"):
+        if ":" not in raw_declaration:
+            continue
+        prop, value = raw_declaration.split(":", 1)
+        prop = prop.strip().lower()
+        value = value.strip()
+        if not prop or not value or prop == "white-space":
+            continue
+        declarations.append(f"{prop}:{value}")
+        seen.add(prop)
+    required = {
+        "display": "block",
+        "box-sizing": "border-box",
+        "max-width": "100%",
+        "word-break": "break-all",
+        "overflow-wrap": "anywhere",
+        "font-family": "'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace",
+    }
+    for prop, value in required.items():
+        if prop not in seen:
+            declarations.append(f"{prop}:{value}")
+    return ";".join(declarations) + ";"
+
+
+def code_text_to_wechat_html(value: str) -> str:
+    value = re.sub(r"<br\s*/?>", "\n", value, flags=re.I)
+    wrapper_match = CODE_WRAPPER_RE.match(value)
+    if wrapper_match:
+        value = wrapper_match.group("body")
+    value = re.sub(r"<[^>]+>", "", value)
+    text = html.unescape(value).strip("\n")
+    lines = text.splitlines() or [""]
+    encoded_lines = []
+    for line in lines:
+        escaped = html.escape(line, quote=False)
+        escaped = escaped.replace("\t", "&nbsp;" * 4).replace(" ", "&nbsp;")
+        encoded_lines.append(escaped or "&nbsp;")
+    return "<br>".join(encoded_lines)
+
+
+def wechat_code_block_from_text(value: str) -> str:
+    style = html.escape(DEFAULT_CODE_STYLE, quote=True)
+    body = code_text_to_wechat_html(html.escape(value))
+    return f'<p style="{style}">{body}</p>'
+
+
+def normalize_wechat_code_blocks(content: str) -> str:
+    """Convert <pre> blocks to WeChat-safe explicit line breaks and spaces."""
+
+    def replace(match: re.Match[str]) -> str:
+        style = wechat_code_style(match.group("attrs"))
+        body = code_text_to_wechat_html(match.group("body"))
+        return f'<p style="{html.escape(style, quote=True)}">{body}</p>'
+
+    return PRE_BLOCK_RE.sub(replace, content)
 
 
 def markdown_to_html(text: str) -> str:
@@ -192,7 +264,7 @@ def load_article(path: Path) -> tuple[dict[str, Any], str]:
         content = article.get("content") or article.get("html")
         if not content:
             raise WeChatError("JSON article must contain 'content' or 'html'.")
-        return dict(article), str(content)
+        return dict(article), normalize_wechat_code_blocks(str(content))
 
     text = read_text(path)
     if suffix in {".html", ".htm"}:
@@ -201,7 +273,7 @@ def load_article(path: Path) -> tuple[dict[str, Any], str]:
         found_title = title_from_html(text)
         if found_title:
             meta["title"] = found_title
-        return meta, content
+        return meta, normalize_wechat_code_blocks(content)
 
     if suffix in {".md", ".markdown"}:
         meta, body = parse_frontmatter(text)
@@ -209,7 +281,7 @@ def load_article(path: Path) -> tuple[dict[str, Any], str]:
             heading = re.search(r"^#\s+(.+)$", body, re.M)
             if heading:
                 meta["title"] = heading.group(1).strip()
-        return meta, markdown_to_html(body)
+        return meta, normalize_wechat_code_blocks(markdown_to_html(body))
 
     raise WeChatError(f"Unsupported article file type: {suffix}")
 

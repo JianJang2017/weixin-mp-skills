@@ -113,7 +113,7 @@
 ### 代码块
 
 ```html
-<pre style="margin:16px 0 24px;padding:16px;background:#27231f;color:#f5efe7;border-radius:6px;white-space:pre-wrap;word-break:break-word;font-size:14px;line-height:1.78;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">{{escaped_code}}</pre>
+<p style="display:block;box-sizing:border-box;max-width:100%;margin:16px 0 24px;padding:16px;background:#27231f;color:#f5efe7;border-radius:6px;word-break:break-all;overflow-wrap:anywhere;font-size:14px;line-height:1.78;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">{{escaped_code_with_br_and_nbsp}}</p>
 ```
 
 ### 参考文章
