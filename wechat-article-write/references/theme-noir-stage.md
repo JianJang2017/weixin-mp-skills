@@ -131,12 +131,13 @@
 <p style="display:block;box-sizing:border-box;max-width:100%;margin:16px 0 22px;padding:16px;background:#07080c;color:#bae6fd;border:1px solid #2a3140;border-radius:10px;word-break:break-all;overflow-wrap:anywhere;font-size:14px;line-height:1.75;font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">{{escaped_code_with_br_and_nbsp}}</p>
 ```
 
-### 参考文章
+### 参考资料组
+
+搭配文末唯一的“参考资料”章节标题使用。多个来源连续列出，不要为每条资料重复写“参考资料”或“参考文章”标签。按来源数量复制或删除条目段落，最后一条使用 `margin:0`。
 
 ```html
 <section style="margin:18px 0 24px;padding:15px 16px;background:#171b24;border:1px solid #2a3140;border-radius:10px;">
-  <p style="margin:0 0 6px;font-size:13px;color:#f4c95d;font-weight:900;">参考文章</p>
-  <p style="margin:0 0 8px;font-size:15px;line-height:1.7;color:#ffffff;font-weight:800;">{{label}}</p>
-  <p style="margin:0;font-size:13px;line-height:1.65;color:#38bdf8;word-break:break-all;">{{url}}</p>
+  <p style="margin:0 0 12px;font-size:15px;line-height:1.7;color:#ffffff;font-weight:800;">{{label1}}<br><span style="font-size:13px;line-height:1.65;color:#38bdf8;font-weight:400;word-break:break-all;">{{url1}}</span></p>
+  <p style="margin:0;font-size:15px;line-height:1.7;color:#ffffff;font-weight:800;">{{label2}}<br><span style="font-size:13px;line-height:1.65;color:#38bdf8;font-weight:400;word-break:break-all;">{{url2}}</span></p>
 </section>
 ```
