@@ -8,13 +8,13 @@
 
 | 技能 | 用途 |
 | --- | --- |
-| `$wechat-article-write` | 文章创作节点。负责选题理解、标题大纲、正文写作、主题匹配、封面图和文内配图 prompt；需要时可输出公众号可粘贴 HTML。 |
+| `$wechat-article-write` | 文章创作节点。负责选题理解、标题大纲、正文写作、视觉风格匹配、封面图和文内配图 prompt；需要时可输出公众号可粘贴 HTML。 |
 | `$wechat-article-image` | 文章配图节点。负责微信公众号封面图、头图和文内配图，默认偏好 2.35:1 宽幅封面和“重图轻标题”的知识媒体风格。 |
 | `$wechat-article-publish` | 文章发布节点。通过微信公众号官方服务端 API 上传本地图文素材，默认创建公众号草稿，并在明确确认后提交发布或查询发布状态。 |
 
 ## 🧭 适合的工作流
 
-- 从选题、草稿或大纲创作一篇公众号文章，并匹配主题与配图 prompt。
+- 从选题、草稿或大纲创作一篇公众号文章，并给出视觉风格与配图 prompt。
 - 为文章生成封面图、头图或文内配图。
 - 将本地 HTML、Markdown 或 JSON 文章推送到公众号后台草稿箱。
 - 将公众号发布流程中的注意事项、凭据读取方式、图片限制和错误处理交给 Codex 统一执行。
@@ -55,7 +55,7 @@ cp -R wechat-article-write wechat-article-image wechat-article-publish ~/.codex/
 重新打开 Codex，或开启一个新的 Codex 会话。之后可以在任务里直接写技能名，例如：
 
 ```text
-使用 $wechat-article-write 根据这个选题创作一篇公众号文章，并给出主题匹配和配图 prompt。
+使用 $wechat-article-write 根据这个选题创作一篇公众号文章，并给出视觉风格建议和配图 prompt。
 ```
 
 ```text
@@ -78,7 +78,7 @@ cp -R wechat-article-write wechat-article-image wechat-article-publish ~/.codex/
 使用 $wechat-article-write 处理 ./draft.md，改写成一篇适合微信公众号发布的文章，并规划封面图和文内配图 prompt。
 ```
 
-技能会优先生成可继续编辑的 Markdown 正文、推荐标题、摘要导语、主题匹配和配图 prompt。只有在你要求公众号 HTML 时，才额外生成可复制到编辑器的自包含 HTML。
+技能会优先生成可继续编辑的 Markdown 正文、推荐标题、摘要导语、视觉风格建议和配图 prompt。只有在你要求公众号 HTML 时，才额外生成可复制到编辑器的自包含 HTML。
 
 ### 🎨 封面和配图
 

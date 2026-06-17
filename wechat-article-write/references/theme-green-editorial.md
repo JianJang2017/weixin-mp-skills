@@ -1,6 +1,6 @@
-# 主题：绿色编辑
+# 主题：森绿编辑
 
-适用于学习笔记、知识方法类文章、效率工作流、教育和实用框架。
+视觉定位：浅绿页面、编辑部式标题、侧边强调线和柔和提示块。强调清新、有组织和轻快但不花哨的版面节奏，不绑定任何文章题材。
 
 ## 设计令牌
 
@@ -78,7 +78,7 @@
 <p style="margin:0 0 16px;font-size:16px;color:#26332c;">{{text}}</p>
 ```
 
-### 方法卡片
+### 浅绿卡片
 
 ```html
 <section style="margin:20px 0 24px;padding:18px;background:#eef8f2;border:1px solid #d7e7dd;border-radius:8px;">

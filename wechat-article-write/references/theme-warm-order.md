@@ -1,6 +1,6 @@
-# 主题：温暖商业
+# 主题：暖白秩序
 
-适用于产品战略、商业分析、运营、管理、发布计划和职场文章。
+视觉定位：暖白页面、低饱和橙色强调、稳重灰蓝文字和规则卡片。强调平静、可信和清楚推进的阅读体验，不绑定任何文章题材。
 
 ## 设计令牌
 
@@ -78,7 +78,7 @@
 <p style="margin:0 0 16px;font-size:16px;color:#334155;">{{text}}</p>
 ```
 
-### 执行摘要
+### 暖色摘要
 
 ```html
 <section style="margin:24px 0 30px;padding:18px 18px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;">
@@ -87,7 +87,7 @@
 </section>
 ```
 
-### 决策卡片
+### 稳态卡片
 
 ```html
 <section style="margin:20px 0 24px;padding:18px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
